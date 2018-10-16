@@ -1,0 +1,37 @@
+import numpy as np
+import scipy as sp
+import matplotlib.pyplot as plt
+from scipy.optimize import leastsq
+T1=np.array([10,40,50,70,90,110])
+U1=np.array([0.09,0.377,0.422,0.635,0.81,0.865])
+
+T2=np.array([10,40,50,70,90,110])
+I2=np.array([277,305,316,352,363,371])
+
+
+###需要拟合的函数func及误差error###
+def func(p,x):
+    k,b=p
+    return k*x+b
+
+def error(p,x,y,s):
+    print (s)
+    return func(p,x)-y #x、y都是列表，故返回值也是个列表
+
+#TEST
+p0=[100,2]
+#print( error(p0,Xi,Yi) )
+
+###主函数从此开始###
+s="测试最小二乘法函数测试" #试验最小二乘法函数leastsq得调用几次error函数才能找到使得均方误差之和最小的k、b
+Para=leastsq(error,p0,args=(T1,U1,s)) #把error函数中除了p以外的参数打包到args中
+k,b=Para[0]
+print("k=",k,'\n',"b=",b)
+###绘图，看拟合效果###
+plt.figure(figsize=(8,6))
+plt.scatter(T1,U1,color="red",label="Sample Point",linewidth=1) #画样本点
+x=np.linspace(0,110,1000)
+y=k*x+b
+plt.plot(x,y,color="orange",label="Fitting Curve",linewidth=1) #画拟合直线
+plt.legend()
+plt.show()
