@@ -1,37 +1,47 @@
 import numpy as np
-import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
-T1=np.array([10,40,50,70,90,110])
-U1=np.array([0.09,0.377,0.422,0.635,0.81,0.865])
+plt.rcParams['font.sans-serif']=['SimHei'] # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus']=False # 用来正常显示负号
 
-T2=np.array([10,40,50,70,90,110])
-I2=np.array([277,305,316,352,363,371])
+#实验数据
+V600=np.array([0,4,8,12,16,20,24,28,32,36,40,44])
+D600=np.array([0,3,6,9,12,15,18,21,24,27,30,33])
+V700=np.array([0,4,8,12,16,20,24,28,32,36,40,44])
+D700=np.array([0,2,5,8,11,14,17,20,23,26,29,32])
 
+#作坐标轴
+X = np.linspace(0, 40, 40)#在区间[0,40]内中等距去40个数作为x的取值
+Y = np.linspace(0,44,44)#在区间[0,44]内中等距去44个数作为y的取值
 
-###需要拟合的函数func及误差error###
 def func(p,x):
     k,b=p
     return k*x+b
 
-def error(p,x,y,s):
-    print (s)
+def error(p,x,y):
     return func(p,x)-y #x、y都是列表，故返回值也是个列表
 
-#TEST
 p0=[100,2]
-#print( error(p0,Xi,Yi) )
 
-###主函数从此开始###
-s="测试最小二乘法函数测试" #试验最小二乘法函数leastsq得调用几次error函数才能找到使得均方误差之和最小的k、b
-Para=leastsq(error,p0,args=(T1,U1,s)) #把error函数中除了p以外的参数打包到args中
+plt.figure(figsize=(8,6))#画布
+plt.subplot(1,2,1)#分层一行两列 选择第一列
+plt.xlabel('D')
+plt.ylabel('V(600V)')
+Para=leastsq(error,p0,args=(D600,V600)) #把error函数中除了p以外的参数打包到args中
 k,b=Para[0]
-print("k=",k,'\n',"b=",b)
-###绘图，看拟合效果###
-plt.figure(figsize=(8,6))
-plt.scatter(T1,U1,color="red",label="Sample Point",linewidth=1) #画样本点
-x=np.linspace(0,110,1000)
-y=k*x+b
-plt.plot(x,y,color="orange",label="Fitting Curve",linewidth=1) #画拟合直线
+print("k1=",k,"b1=",b)
+plt.scatter(D600,V600,color="blueviolet",label="样本点",linewidth=1) #画样本点
+Y=k*X+b
+plt.plot(X,Y,color="violet",label="拟合曲线",linewidth=1) #画拟合直线
+plt.legend()
+plt.subplot(1,2,2)
+plt.xlabel('D')
+plt.ylabel('V(700V)')
+ara=leastsq(error,p0,args=(D700,V700)) #把error函数中除了p以外的参数打包到args中
+k,b=Para[0]
+print("k2=",k,"b2=",b)
+plt.scatter(D700,V700,color="blueviolet",label="样本点",linewidth=1) #画样本点
+Y=k*X+b
+plt.plot(X,Y,color="violet",label="拟合曲线",linewidth=1) #画拟合直线
 plt.legend()
 plt.show()
